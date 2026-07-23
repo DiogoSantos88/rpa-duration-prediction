@@ -1,0 +1,21 @@
+# Dados confidenciais — nunca versionar
+data/raw/*.xlsx
+data/processed/*.xlsx
+
+# Outputs gerados pelo pipeline
+outputs/figures/**/*.png
+outputs/figures/**/*.pdf
+outputs/tables/*.tex
+outputs/tables/*.csv
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Editores / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
