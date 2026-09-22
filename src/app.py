@@ -1,20 +1,20 @@
 """
 Interactive prediction app (dissertation Chapter 5 — Applications).
 
+Public demo version: trained on SYNTHETIC data (see generate_synthetic_v9.py)
+so it can be published online without exposing confidential company data. The
+study's real results and metrics are reported in the dissertation.
+
 Streamlit application where the user fills in the characteristics of a new
 RPA project and obtains the predicted duration class, with per-class
-probabilities, using the Ordinal Logistic Regression model (the best
-performing model in the study, cf. dissertation Chapter 4).
+probabilities, using the Ordinal Logistic Regression model.
 
-The model is (re)trained at startup on the full V9 dataset — training takes
-a fraction of a second — so no serialised model needs to be distributed.
-Requires data/processed/DB_RPA_Projects_V9.xlsx (run 01_preprocess.py first).
+The model is (re)trained at startup on the V9 dataset — training takes a
+fraction of a second — so no serialised model needs to be distributed.
+Requires data/processed/DB_RPA_Projects_V9.xlsx.
 
 Run from the repository root:
     streamlit run src/app.py
-
-Note: the user interface is in Portuguese, matching the dissertation and
-the organisational context of the study.
 """
 
 import sys
@@ -61,9 +61,8 @@ def train_model():
 if not PATH_V9.exists():
     st.error(
         "Base de dados V9 não encontrada em `data/processed/`. "
-        "Corre primeiro `python src/01_preprocess.py` (requer o ficheiro "
-        "`Original.xlsx` em `data/raw/` — não distribuído com o "
-        "repositório, por confidencialidade)."
+        "Gera os dados de demonstração com "
+        "`python src/generate_synthetic_v9.py`."
     )
     st.stop()
 
@@ -73,12 +72,20 @@ model, scaler, x_cols, n_train = train_model()
 # Header
 # ---------------------------------------------------------------------
 st.title("Previsão de Duração de Projetos de RPA")
+
+st.info(
+    "**Demonstração pública.** Esta aplicação foi treinada com **dados "
+    "sintéticos**, gerados apenas para ilustrar a interface e o "
+    "funcionamento da previsão. As métricas e os resultados do estudo "
+    "constam da dissertação e foram obtidos com os dados reais.",
+    icon="ℹ️",
+)
+
 st.markdown(
     "Preenche as características do novo projeto e obtém a **classe de "
     "duração prevista** (em horas de desenvolvimento), com a probabilidade "
     "de cada classe. Modelo: **Regressão Logística Ordinal** "
-    "(*proportional odds*), o de melhor desempenho no estudo "
-    "(QWK = 0,761; MAE em classes = 0,403, validação cruzada k=3)."
+    "(*proportional odds*), o modelo de melhor desempenho no estudo."
 )
 
 # ---------------------------------------------------------------------
@@ -196,17 +203,7 @@ prob_df = pd.DataFrame({
 }).set_index("Classe")
 st.bar_chart(prob_df, horizontal=True)
 
-with st.expander("Notas sobre a previsão"):
-    st.markdown(
-        f"- Modelo treinado sobre **n = {n_train} projetos** históricos "
-        "(2017–2026) da organização; classes extremas menos representadas, "
-        "pelo que previsões nos extremos devem ser lidas com cautela.\n"
-        "- A previsão é uma **estimativa de apoio ao planeamento**, não "
-        "substitui o julgamento do gestor de projeto.\n"
-        "- Projetos *on demand* usam a frequência diária como valor de "
-        "referência, com a flag *on demand* ativa — replicando o tratamento "
-        "aplicado no treino.\n"
-        "- Detalhes metodológicos: dissertação *Modelos de Machine Learning "
-        "para Previsão de Duração de Projetos de RPA* (D. R. Santos, "
-        "Universidade do Minho, 2026)."
-    )
+st.caption(
+    "Dissertação: *Modelos de Machine Learning para Previsão de Duração de "
+    "Projetos de RPA* (D. R. Santos, Universidade do Minho, 2026)."
+)
