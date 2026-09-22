@@ -1,0 +1,14 @@
+[project]
+name = "rpa-duration-prediction"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "matplotlib>=3.11.1",
+    "numpy>=2.5.2",
+    "openpyxl>=3.1.5",
+    "pandas>=3.0.5",
+    "scikit-learn>=1.9.0",
+    "streamlit>=1.64.0",
+]
